@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import discord
 from services import googleCalendarService, googleAuth
+from commands import last_two_weeks
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,15 +29,8 @@ async def on_message(message: discord.Message):
     if message.author == client.user:
         return
 
-    if message.content == "!last2Weeks":
-        await message.channel.send("Fetching events from the last two weeks...")
-        credentials = googleAuth.get_credentials()
-        events = googleCalendarService.get_lastTwoWeeksEvents(credentials)
-        for event in events:
-            start = event["start"].get("dateTime", event["start"].get("date"))
-            end = event["end"].get("dateTime", event["end"].get("date"))
-            await message.channel.send(f"{start} -> {end} {event.get('summary', '(no title)')}")
-        
+    if message.content.strip().lower() == "!last2weeks":
+        await last_two_weeks.last_two_weeks(message)
 
 client.run(TOKEN)
 
